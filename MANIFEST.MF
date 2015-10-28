@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Created-By: Pedro Reis dos Santos
+Implementation-Vendor: Instituto Superior Técnico
+Implementation-Title: java2uml
+Implementation-Version: 20151028132925
+Specified-By: Pedro Reis dos Santos
+Specification-Vendor: Instituto Superior Técnico
+Specification-Title: java to uml translator
+Specification-Version: 28 de Outubro de 2015
+Class-Path: antlr-4.5-complete.jar:.
+Main-Class: java2umletino
