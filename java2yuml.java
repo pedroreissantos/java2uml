@@ -119,17 +119,14 @@ public class java2yuml {
 		}
 		if (!meth) { meth = true; out.print("| "); }
                 out.print(prot + " " + id+"("+p+") : "+t+"; ");
-                // System.err.println("MT: "+ctx.getText());
             }
 
             @Override
             public void exitFieldDeclaration(JavaParser.FieldDeclarationContext ctx) {
 		if (!atrib) return;
 		String t = type(ctx.type(), true);
-		for (JavaParser.VariableDeclaratorContext v: ctx.variableDeclarators().variableDeclarator()) {
-		    System.err.println(v.variableDeclaratorId().getText());
+		for (JavaParser.VariableDeclaratorContext v: ctx.variableDeclarators().variableDeclarator())
 		    out.print(prot + " " + v.variableDeclaratorId().getText() + ": " + t + "; ");
-		}
             }
 
             @Override
@@ -153,7 +150,6 @@ public class java2yuml {
 		}
 		if (!meth) { meth = true; out.print("| "); }
                 out.print(prot + " " + id+"("+p+"); ");
-                // System.err.println("CT: "+ctx.getText());
             }
 
             @Override
@@ -193,7 +189,7 @@ public class java2yuml {
 		    id = ctx.classOrInterfaceType().Identifier(i-1).getText();
 		    if (!id.equals(ctx.getText())) id += "...";
 		    if (assoc && ids.contains(id)) 
-		        decl += "[" + cl+"]1-1>["+id+"]\n";
+		        decl += "[" + cl+m1+id+"]\n";
 		    if (ctx.classOrInterfaceType().typeArguments() != null) {
 			j = ctx.classOrInterfaceType().typeArguments().size();
 			if (ctx.classOrInterfaceType().typeArguments(j-1) != null) {
@@ -202,7 +198,7 @@ public class java2yuml {
 			    for (JavaParser.TypeArgumentContext t: ctx.classOrInterfaceType().typeArguments(j-1).typeArgument())
 				if (t.type().primitiveType() == null)
 				    if (assoc && ids.contains(id = t.type().classOrInterfaceType().Identifier(i-1).getText()))
-					decl += "[" + cl+"]1-*>["+id+"]\n";
+					decl += "[" + cl+m2+id+"]\n";
 			}
 		    }
 		}
