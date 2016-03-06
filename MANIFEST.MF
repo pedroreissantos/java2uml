@@ -7,5 +7,5 @@ Specified-By: Pedro Reis dos Santos
 Specification-Vendor: Instituto Superior Técnico
 Specification-Title: java to uml translator
 Specification-Version: 28 de Outubro de 2015
-Class-Path: antlr-4.5-complete.jar:.
+Class-Path: wget-1.2.17.jar:antlr-4.5-complete.jar:commons-io-2.4.jar:.
 Main-Class: java2umletino

@@ -1,33 +1,38 @@
 /*
  * Convert .java files into yuml (yuml.me) format
  *
- * compile: antlr4 java.g4; javac -cp antlr-4.5-complete.jar:. *.java
- * run: java -cp antlr-4.5-complete.jar:. java2yuml *.java
- * jar: jar -cfm java2yuml.jar MANIFEST.MF *.class java2yuml.java java.g4 antlr-4.5-complete.jar
+ * compile: antlr4 Java.g4; javac -cp antlr-4.5-complete.jar:wget-1.2.17.jar:. *.java
+ * run: java -cp antlr-4.5-complete.jar:wget-1.2.17.jar:commons-io-2.4.jar:. java2yuml *.java
+ * jar: jar -cfm java2yuml.jar MANIFEST.MF *.class java2yuml.java java.g4 antlr-4.5-complete.jar wget-1.2.17.jar commons-io-2.4.jar
  * reis.santos@tecnico.ulisboa.pt (C)28oct2015
  */
 
 import java.io.*;
 import java.util.*;
 import org.antlr.v4.runtime.*;
+import com.github.axet.wget.WGet;
+import java.net.URL;
 
 public class java2yuml {
-    private static boolean param = true, atrib = true, func = true, meth = false;
+    private static boolean param = true, atrib = true, func = true, meth = false, extract = false;
     private static String decl, locals = "", prot = "", cl, m1 = "]1-1>[", m2 = "]1-*>[";
     private static Set<String> ids = new HashSet<String>();
     private static Map<String,String> link = new HashMap<String,String>();
     private static PrintWriter out = new PrintWriter(System.out);
     private static final String USAGE = "USAGE: java2yuml [-a] [-c] [-m] [-o outfile] [-p] files.java ...";
+    private static String url = "http://yuml.me/diagram/scruffy;dir:lr/class/", outfile = "out.png";
 
     public static void main(String[] args) throws Exception {
 	int argc = 0;
+	StringWriter str = new StringWriter();
 	if (args.length == 0) {
 	    System.err.println(USAGE + "\n"
 	    	+ "\t-a: omit attributes in classes\n"
 	    	+ "\t-c: omit cardinality in associations\n"
 	    	+ "\t-m: omit methods in classes\n"
 	    	+ "\t-o outfile: redirect output to file\n"
-	    	+ "\t-p: omit parameters in methods\n");
+	    	+ "\t-p: omit parameters in methods\n"
+		+ "\t-x: extract .png image file\n");
 	    return;
 	}
 	if (args.length > argc && args[argc].equals("-a")) { atrib = false; argc++; }
@@ -36,21 +41,30 @@ public class java2yuml {
 	if (args.length > argc && args[argc].equals("-o")) {
 	    argc++;
 	    if (args.length > argc) {
-		out = new PrintWriter(args[argc], "UTF-8");
+		out = new PrintWriter(outfile = args[argc], "UTF-8");
 		argc++;
 	    } else 
 		System.err.println(USAGE + "\n\t-o: outfile missing.");
 	}
 	if (args.length > argc && args[argc].equals("-p")) { param = false; argc++; }
+	if (args.length > argc && args[argc].equals("-x")) {
+	    extract = true;
+	    argc++;
+	    out = new PrintWriter(str);
+	}
 	for (int k, j, i = argc; i < args.length; i++) {
 	    if ((j = args[i].lastIndexOf('/')) == 0) j = -1;
 	    if ((k = args[i].lastIndexOf('.')) == 0) k = args[i].length();
 	    locals += args[i].substring(j+1,k) + " ";
 	    ids.add(args[i].substring(j+1,k));
 	}
-	out.println("// " + locals); // simpler than ids.toString()
+	if (!extract) out.println("// " + locals); // simpler than ids.toString()
 	while (argc < args.length) parse(args[argc++]);
 	out.close();
+	if (extract) {
+	    URL cmd = new URL(url+str.toString().replaceAll("[\r]?\n", ", ").replaceAll(" ", "%20"));
+	    new WGet(cmd, new File(".", outfile)).download();
+	}
     }
 
     public static void parse(String file) throws Exception {
@@ -112,8 +126,10 @@ public class java2yuml {
             public void exitFieldDeclaration(JavaParser.FieldDeclarationContext ctx) {
 		if (!atrib) return;
 		String t = type(ctx.type(), true);
-		for (JavaParser.VariableDeclaratorContext v: ctx.variableDeclarators().variableDeclarator())
+		for (JavaParser.VariableDeclaratorContext v: ctx.variableDeclarators().variableDeclarator()) {
+		    System.err.println(v.variableDeclaratorId().getText());
 		    out.print(prot + " " + v.variableDeclaratorId().getText() + ": " + t + "; ");
+		}
             }
 
             @Override
