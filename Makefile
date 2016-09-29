@@ -3,7 +3,7 @@ GRAM=Java
 MAIN=java2yuml
 FILE=*.java
 JFILE=../java2uml.jar
-CP=wget-1.2.17.jar:antlr-4.5-complete.jar:commons-io-2.4.jar:.
+CP=wget-1.3.0.jar:antlr-4.5-complete.jar:org.apache.commons-io-2.4.jar:.
 
 all:
 	antlr4 $(GRAM).g4
