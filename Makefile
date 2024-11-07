@@ -25,4 +25,4 @@ umletino: all
 	java -cp $(CP) java2umletino $(FILE)
 
 clean:
-	rm -f *.class $(GRAM)[A-Z]*.java *.tokens *~
+	rm -f *.class $(GRAM)*.java *.interp *.tokens *~
